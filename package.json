@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+      "playwright": "^1.40.0"  // Replace with the appropriate version
+    }
+  }
+  
