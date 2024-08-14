@@ -44,16 +44,16 @@ def load_cookies(context):
             context.add_cookies(cleaned_cookies)
         print("Cookies loaded successfully.")
     except FileNotFoundError as e:
-        show_popup("Error", f"Cookies file error: {e}")
+        print("Error", f"Cookies file error: {e}")
         raise
     except ValueError as e:
-        show_popup("Error", f"Cookies file format issue: {e}")
+        print("Error", f"Cookies file format issue: {e}")
         raise
     except json.JSONDecodeError as e:
-        show_popup("Error", f"Error parsing cookies file: {e}")
+        print("Error", f"Error parsing cookies file: {e}")
         raise
     except Exception as e:
-        show_popup("Error", f"Error loading cookies: {e}")
+        print("Error", f"Error loading cookies: {e}")
         raise
 
 def extract_cookies_for_header(cookies):
@@ -76,13 +76,12 @@ def make_post_request(cookies_header):
         response.raise_for_status()  # Raise an exception for HTTP errors
         return response.json()
     except requests.RequestException as e:
-        print(f"Error during POST request: {e}")
-        show_popup("Error", f"Error during POST request: {e}")
+        print(f"Error during POST request:print
         return None
 
-def show_popup(title, message):
-    """Show a system popup with the given title and message."""
-    ctypes.windll.user32.MessageBoxW(0, message, title, 0x40 | 0x1)
+# def show_popup(title, message):
+#     """Show a system popup with the given title and message."""
+#     ctypes.windll.user32.MessageBoxW(0, message, title, 0x40 | 0x1)
 
 def close_modal_if_present(page):
     """Close any modal if present on the page."""
@@ -123,7 +122,7 @@ def claim_rewards(page, cookies_header):
         try:
             print("Waiting for success message...")
             page.wait_for_selector(success_message_selector, timeout=10000)  # Wait up to 10 seconds
-            show_popup("Success", "Reward claimed successfully.")
+            # show_popup("Success", "Reward claimed successfully.")
             print("Reward claimed successfully.")
         except Exception as e:
             print("Success message not found, checking for network request...")
@@ -133,16 +132,16 @@ def claim_rewards(page, cookies_header):
             if response_json:
                 message = response_json.get('message')
                 if message == "Traveler, you've already checked in today~":
-                    show_popup("Info", message)
+                    # show_popup("Info", message)
                     print(message)
                 elif message == 'Not logged in':
-                    show_popup("Error", "Cookies might have expired or there is an issue.")
+                    # show_popup("Error", "Cookies might have expired or there is an issue.") show_popup("Error", "Cookies might have expired or there is an issue.")
                     print("Cookies might have expired or there is an issue.")
                 else:
-                    show_popup("Error", "There is an issue. Contact A.S.K._SENPAI.")
+                    # show_popup("Error", "There is an issue. Contact A.S.K._SENPAI.")
                     print("There is an issue. Contact A.S.K._SENPAI.")
             else:
-                show_popup("Error", "Unable to get a response from the server.")
+                # show_popup("Error", "Unable to get a response from the server.")
                 print("Unable to get a response from the server.")
     except Exception as e:
         print(f"Error claiming reward with JavaScript: {e}")
