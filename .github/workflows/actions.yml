@@ -76,6 +76,8 @@ jobs:
         with:
                 add: 'script_output.log'
                 message: 'Update script log'
+        env:
+          COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
 
       
       - name: Install dependencies
