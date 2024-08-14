@@ -29,28 +29,34 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r req.txt
-          sudo apt-get update
-          sudo apt-get install -y \
-            libvpx-dev \
-            libevent-dev \
-            libopus0 \
-            libgstreamer-plugins-base1.0-dev \
-            libharfbuzz-dev \
-            libhyphen-dev \
-            libflite1 \
-            libgles2-mesa-dev \
-            libx264-dev \
-            libwoff1 \
-            libnss3 \
-            libxkbcommon-x11-0 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxrandr2 \
-            libxtst6 \
-            libatspi2.0-0 \
-            libgdk-pixbuf2.0-0 \
-            libgtk-3-0 \
-            libgbm-dev
+      
+      - name: Install dependencies 2
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y \
+              libvpx-dev \
+              libevent-dev \
+              libopus0 \
+              libgstreamer-plugins-base1.0-dev \
+              libharfbuzz-dev \
+              libhyphen-dev \
+              libflite1 \
+              libgles2-mesa-dev \
+              libx264-dev \
+              libwoff1 \
+              libnss3 \
+              libxkbcommon-x11-0 \
+              libxcomposite1 \
+              libxdamage1 \
+              libxrandr2 \
+              libxtst6 \
+              libatspi2.0-0 \
+              libgdk-pixbuf2.0-0 \
+              libgtk-3-0 \
+              libgbm-dev \
+              libunwind-dev \
+              # Ensure there are no broken packages
+              sudo apt-get -f install
 
       - name: Install dependencies
         run: npm install
