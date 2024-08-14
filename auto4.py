@@ -5,6 +5,15 @@ import subprocess
 from playwright.sync_api import sync_playwright
 import requests
 
+# Log file path
+log_file_path = "script_output.log"
+
+def log_final_result(message):
+    """Log the final result to the log file."""
+    with open(log_file_path, "w") as log_file:  # Overwrite the log file
+        log_file.write(f"{message}\n")
+    print(message)  # Also print to the console
+
 def clean_cookies(cookies):
     """Clean cookies by removing or correcting invalid attributes."""
     cleaned_cookies = []
@@ -101,7 +110,7 @@ def claim_rewards(page, cookies_header):
         try:
             print("Waiting for success message...")
             page.wait_for_selector(success_message_selector, timeout=10000)  # Wait up to 10 seconds
-            print("Reward claimed successfully.")
+            log_final_result("Reward claimed successfully.")
         except Exception as e:
             print("Success message not found, checking for network request...")
             # Make POST request to check for login popup or reward status
@@ -110,15 +119,16 @@ def claim_rewards(page, cookies_header):
             if response_json:
                 message = response_json.get('message')
                 if message == "Traveler, you've already checked in today~":
-                    print(message)
+                    log_final_result(message)
                 elif message == 'Not logged in':
-                    print("Cookies might have expired or there is an issue.")
+                    log_final_result("Cookies might have expired or there is an issue.")
                 else:
-                    print("There is an issue. Contact A.S.K._SENPAI.")
+                    log_final_result("There is an issue. Contact A.S.K._SENPAI.")
             else:
-                print("Unable to get a response from the server.")
+                log_final_result("Unable to get a response from the server.")
     except Exception as e:
         print(f"Error claiming reward with JavaScript: {e}")
+        log_final_result("An unexpected error occurred during reward claiming.")
 
 def main():
     with sync_playwright() as p:
