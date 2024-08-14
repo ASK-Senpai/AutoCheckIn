@@ -76,8 +76,6 @@ jobs:
         with:
                 add: 'script_output.log'
                 message: 'Update script log'
-              env:
-                LOG_TOKEN: ${{ secrets.LOG_TOKEN }}
 
       
       - name: Install dependencies
