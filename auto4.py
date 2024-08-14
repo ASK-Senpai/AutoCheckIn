@@ -2,23 +2,8 @@ import json
 import os
 import sys
 import subprocess
-import ctypes
 from playwright.sync_api import sync_playwright
 import requests
-
-# Path to your cookies file
-script_dir = os.path.dirname(os.path.abspath(__file__))
-cookies_file = os.path.join(script_dir, 'cookies.json')
-
-def install_playwright():
-    """Install Playwright and its dependencies."""
-    try:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'playwright'])
-        subprocess.check_call(['playwright', 'install'])
-        print("Playwright and its dependencies installed successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing Playwright: {e}")
-        sys.exit(1)
 
 def clean_cookies(cookies):
     """Clean cookies by removing or correcting invalid attributes."""
@@ -29,31 +14,29 @@ def clean_cookies(cookies):
         cleaned_cookies.append(cookie)
     return cleaned_cookies
 
-def load_cookies(context):
-    """Load cookies into the Playwright context."""
+def load_cookies_from_github_secrets(context):
+    """Load cookies from GitHub Secrets into the Playwright context."""
     try:
-        if not os.path.isfile(cookies_file):
-            raise FileNotFoundError("Cookies file not found.")
-        
-        with open(cookies_file, 'r') as file:
-            cookies = json.load(file)
-            if not isinstance(cookies, list):
-                raise ValueError("Cookies file does not contain a list of cookies.")
-            
-            cleaned_cookies = clean_cookies(cookies)
-            context.add_cookies(cleaned_cookies)
-        print("Cookies loaded successfully.")
-    except FileNotFoundError as e:
-        print("Error", f"Cookies file error: {e}")
-        raise
+        # Load cookies from the COOKIES_JSON GitHub secret
+        cookies_json = os.getenv("COOKIES_JSON")
+        if not cookies_json:
+            raise ValueError("GitHub Secrets for cookies not found.")
+
+        cookies = json.loads(cookies_json)
+        if not isinstance(cookies, list):
+            raise ValueError("Cookies data is not a list.")
+
+        cleaned_cookies = clean_cookies(cookies)
+        context.add_cookies(cleaned_cookies)
+        print("Cookies loaded successfully from GitHub Secrets.")
     except ValueError as e:
-        print("Error", f"Cookies file format issue: {e}")
+        print(f"Error loading cookies: {e}")
         raise
     except json.JSONDecodeError as e:
-        print("Error", f"Error parsing cookies file: {e}")
+        print(f"Error parsing cookies from GitHub Secrets: {e}")
         raise
     except Exception as e:
-        print("Error", f"Error loading cookies: {e}")
+        print(f"Unexpected error loading cookies: {e}")
         raise
 
 def extract_cookies_for_header(cookies):
@@ -76,12 +59,8 @@ def make_post_request(cookies_header):
         response.raise_for_status()  # Raise an exception for HTTP errors
         return response.json()
     except requests.RequestException as e:
-        print("Error during POST request:print")
+        print("Error during POST request: ", e)
         return None
-
-# def show_popup(title, message):
-#     """Show a system popup with the given title and message."""
-#     ctypes.windll.user32.MessageBoxW(0, message, title, 0x40 | 0x1)
 
 def close_modal_if_present(page):
     """Close any modal if present on the page."""
@@ -122,7 +101,6 @@ def claim_rewards(page, cookies_header):
         try:
             print("Waiting for success message...")
             page.wait_for_selector(success_message_selector, timeout=10000)  # Wait up to 10 seconds
-            # show_popup("Success", "Reward claimed successfully.")
             print("Reward claimed successfully.")
         except Exception as e:
             print("Success message not found, checking for network request...")
@@ -132,39 +110,25 @@ def claim_rewards(page, cookies_header):
             if response_json:
                 message = response_json.get('message')
                 if message == "Traveler, you've already checked in today~":
-                    # show_popup("Info", message)
                     print(message)
                 elif message == 'Not logged in':
-                    # show_popup("Error", "Cookies might have expired or there is an issue.") show_popup("Error", "Cookies might have expired or there is an issue.")
                     print("Cookies might have expired or there is an issue.")
                 else:
-                    # show_popup("Error", "There is an issue. Contact A.S.K._SENPAI.")
                     print("There is an issue. Contact A.S.K._SENPAI.")
             else:
-                # show_popup("Error", "Unable to get a response from the server.")
                 print("Unable to get a response from the server.")
     except Exception as e:
         print(f"Error claiming reward with JavaScript: {e}")
 
-
-
-
-
-
 def main():
-    install_playwright()
-
     with sync_playwright() as p:
-        browser = p.firefox.launch(headless=True)  # Running in non-headless mode for testing
+        browser = p.firefox.launch(headless=True)
         context = browser.new_context()
 
         try:
-            load_cookies(context)
-            cookies = context.cookies()
-            cookies_header = extract_cookies_for_header(cookies)
+            load_cookies_from_github_secrets(context)
         except Exception as e:
             print(f"Failed to load cookies: {e}")
-            # show_popup("Error", "Cookies expired or unable to load cookies.")
             browser.close()
             return
 
@@ -172,10 +136,10 @@ def main():
         page.goto("https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481")
 
         close_modal_if_present(page)
+        cookies_header = extract_cookies_for_header(context.cookies())
         claim_rewards(page, cookies_header)
 
         browser.close()
-
         print("Browser closed.")
 
 if __name__ == "__main__":

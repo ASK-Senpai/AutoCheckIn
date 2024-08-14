@@ -83,4 +83,6 @@ jobs:
 
 
       - name: Run Playwright script
+        env:
+          COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
         run: python auto4.py  # Replace with the actual command to run your script
