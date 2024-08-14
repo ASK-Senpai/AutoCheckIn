@@ -30,13 +30,16 @@ jobs:
           python -m pip install --upgrade pip
 
       
-      - name: Set up cache for Playwright browsers
+      - name: Cache Python packages and Playwright browsers
         uses: actions/cache@v3
         with:
-            path: ~/.cache/ms-playwright
-            key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+            path: |
+              ~/.cache/pip
+              ~/.cache/ms-playwright
+            key: ${{ runner.os }}-pip-${{ hashFiles('req.txt') }}-${{ hashFiles('package-lock.json') }}
             restore-keys: |
-              ${{ runner.os }}-playwright-
+              ${{ runner.os }}-pip-
+              ${{ runner.os }}-playwright-s
 
       
       - name: Install dependencies 2
@@ -72,8 +75,7 @@ jobs:
 
       - name: Install Playwright and dependencies
         run: |
-          pip install playwright
-          pip install requests
+            pip install -r req.txt
           
       - name: Install Playwright browsers if not cached
         run: |

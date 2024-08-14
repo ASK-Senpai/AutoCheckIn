@@ -164,7 +164,7 @@ def main():
             cookies_header = extract_cookies_for_header(cookies)
         except Exception as e:
             print(f"Failed to load cookies: {e}")
-            show_popup("Error", "Cookies expired or unable to load cookies.")
+            # show_popup("Error", "Cookies expired or unable to load cookies.")
             browser.close()
             return
 
