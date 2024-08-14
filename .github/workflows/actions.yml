@@ -48,7 +48,9 @@ jobs:
             libxrandr2 \
             libxtst6 \
             libatspi2.0-0 \
-            libgdk-pixbuf2.0-0
+            libgdk-pixbuf2.0-0 \
+            libgtk-3-0 \
+            libgbm-dev
 
       - name: Install dependencies
         run: npm install
