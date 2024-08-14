@@ -76,7 +76,7 @@ def make_post_request(cookies_header):
         response.raise_for_status()  # Raise an exception for HTTP errors
         return response.json()
     except requests.RequestException as e:
-        print(f"Error during POST request:print
+        print("Error during POST request:print")
         return None
 
 # def show_popup(title, message):
