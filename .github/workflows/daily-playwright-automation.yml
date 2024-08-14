@@ -96,3 +96,16 @@ jobs:
         env:
           COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
         run: python auto4.py  # Replace with the actual command to run your script
+
+      - name: commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git diff-index --quiet HEAD || (git commit -a -m "updated logs" --allow-empty)
+          
+      - name: push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
+          branch: main 
