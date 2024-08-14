@@ -31,22 +31,36 @@ jobs:
           pip install -r req.txt
           sudo apt-get update
           sudo apt-get install -y \
-          libwoff2-dev \
           libvpx-dev \
           libevent-dev \
           libopus0 \
-          libgstreamer1.0-dev \
+          libgstreamer-plugins-base1.0-dev \
           libharfbuzz-dev \
           libhyphen-dev \
           libflite1 \
           libgles2-mesa-dev \
-          libx264-dev
+          libx264-dev \
+          libwoff1 \
+          libvpx6 \
+          libenchant1c2a \
+          libgtk-3-0 \
+          libgbm-dev \
+          libnss3 \
+          libxkbcommon-x11-0 \
+          libxcomposite1 \
+          libxdamage1 \
+          libxrandr2 \
+          libxtst6 \
+          libatspi2.0-0 \
+          libgdk-pixbuf2.0-0
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install Playwright Browsers
-        run: npx playwright install
+      - name: Install Playwright and dependencies
+        run: |
+          pip install playwright
+          playwright install
 
       - name: Run Playwright script
         run: python auto4.py  # Replace with the actual command to run your script
