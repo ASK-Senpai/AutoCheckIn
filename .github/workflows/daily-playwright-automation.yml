@@ -107,5 +107,5 @@ jobs:
       - name: push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
-          COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main 
