@@ -118,7 +118,7 @@ def claim_rewards(page, cookies_header):
 
             if response_json:
                 message = response_json.get('message')
-                if message == "Dodgy Malaka, you've already checked in today~":
+                if message == "Traveler, you've already checked in today~":
                     log_final_result(message)
                 elif message == 'Not logged in':
                     log_final_result("Cookies might have expired or there is an issue.")
