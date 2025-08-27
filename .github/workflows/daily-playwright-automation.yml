@@ -3,52 +3,52 @@ name: run-automation
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *" # Runs daily at midnight UTC
+    - cron: "0 0 * * *" # runs daily at midnight UTC
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
+  run-automation:
+    runs-on: ubuntu-24.04
 
     steps:
+      # 1. Checkout repository
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # 2. Set up Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.12"
+          cache: "pip"
 
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/req.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
+      # 3. Cache Playwright browsers
       - name: Cache Playwright browsers
+        uses: actions/cache@v4
         id: playwright-cache
-        uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-playwright
+            playwright-${{ runner.os }}-
 
+      # 4. Install Python dependencies
       - name: Install Python dependencies
-        run: pip install -r req.txt
+        run: pip install -r requirements.txt
 
+      # 5. Install Playwright browsers (only if not cached)
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: python -m playwright install --with-deps
+        run: python -m playwright install --with-deps chromium
 
+      # 6. Run automation script
       - name: Run automation script
-        run: python auto4.py
         env:
           COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
+        run: python main.py > output.log 2>&1
 
+      # 7. Upload log file (latest version)
       - name: Upload log file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: automation-logs
+          name: automation-log
           path: output.log
