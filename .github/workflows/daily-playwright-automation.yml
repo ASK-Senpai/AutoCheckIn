@@ -22,30 +22,21 @@ jobs:
           cache: pip
           cache-dependency-path: req.txt
 
-      # 3. Cache Playwright browsers
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('req.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-playwright-
 
       # 4. Install Python dependencies
       - name: Install Python dependencies
         run: pip install --upgrade -r req.txt
 #5. playwirht browser
-- name: Setup Playwright browsers cache
-  id: playwright-cache
-  uses: actions/cache@v4
-  with:
-    path: ~/.cache/ms-playwright
-    key: ${{ runner.os }}-playwright-${{ hashFiles('req.txt') }}
+      - name: Setup Playwright browsers cache
+        id: down-playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('req.txt') }}
 
-- name: Install Playwright browsers if not cached
-  if: steps.playwright-cache.outputs.cache-hit != 'true'
-  run: python -m playwright install --with-deps chromium firefox webkit
+      - name: Install Playwright browsers if not cached
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: python -m playwright install --with-deps chromium firefox webkit
 
 
       # 6. Run your script
