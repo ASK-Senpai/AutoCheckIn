@@ -9,18 +9,13 @@ jobs:
   run-playwright-script:
     runs-on: ubuntu-latest
 
-    # Use Playwright official Docker image (includes browsers & dependencies)
+    # Use Playwright official Docker image (includes browsers & Python)
     container:
       image: mcr.microsoft.com/playwright/python:v1.46.0-focal
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
 
       - name: Cache pip dependencies
         uses: actions/cache@v3
@@ -45,8 +40,6 @@ jobs:
         with:
           add: "script_output.log"
           message: "Update script log"
-        env:
-          COOKIES_JSON: ${{ secrets.COOKIES_JSON }}
 
       - name: Commit other changes (if any)
         run: |
