@@ -35,11 +35,18 @@ jobs:
       # 4. Install Python dependencies
       - name: Install Python dependencies
         run: pip install --upgrade -r req.txt
+#5. playwirht browser
+- name: Setup Playwright browsers cache
+  id: playwright-cache
+  uses: actions/cache@v4
+  with:
+    path: ~/.cache/ms-playwright
+    key: ${{ runner.os }}-playwright-${{ hashFiles('req.txt') }}
 
-      # 5. Install Playwright browsers only if not cached
-      - name: Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: python -m playwright install --with-deps chromium
+- name: Install Playwright browsers if not cached
+  if: steps.playwright-cache.outputs.cache-hit != 'true'
+  run: python -m playwright install --with-deps chromium firefox webkit
+
 
       # 6. Run your script
       - name: Run Auto Check-In Script
