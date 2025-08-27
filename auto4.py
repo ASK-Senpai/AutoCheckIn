@@ -18,10 +18,18 @@ def clean_cookies(cookies):
     """Clean cookies by removing or correcting invalid attributes."""
     cleaned_cookies = []
     for cookie in cookies:
+        # Remove invalid sameSite values
         if 'sameSite' in cookie and cookie['sameSite'] not in ['Strict', 'Lax', 'None']:
             del cookie['sameSite']
+        
+        # Remove unsupported fields for Playwright
+        for field in ["partitionKey", "storeId", "hostOnly", "firstPartyDomain"]:
+            if field in cookie:
+                del cookie[field]
+        
         cleaned_cookies.append(cookie)
     return cleaned_cookies
+
 
 def load_cookies_from_github_secrets(context):
     """Load cookies from GitHub Secrets into the Playwright context."""
